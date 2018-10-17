@@ -170,6 +170,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 }
             case .normal:
                 HUG.dismiss()
+                if infoLabel.text == "Loading" {
+                    infoLabel.text = ""
+                }
             }
         }
     }
@@ -223,3 +226,4 @@ struct HUG {
     }
     
 }
+
