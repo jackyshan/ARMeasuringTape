@@ -14,6 +14,7 @@ func + (left: SCNVector3, right: SCNVector3) -> SCNVector3 {
 }
 
 extension SCNVector3 {
+
     func distance(_ receiver: SCNVector3) -> Float{
         let xd = receiver.x - self.x
         let yd = receiver.y - self.y
@@ -22,6 +23,7 @@ extension SCNVector3 {
 
         return distance
     }
+
 }
 
 extension UIImage {

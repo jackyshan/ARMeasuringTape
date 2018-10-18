@@ -51,6 +51,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
         sceneView.debugOptions = [.showFeaturePoints]
+        sceneView.automaticallyUpdatesLighting = true
         // Run the view's session
         sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
     }
@@ -113,30 +114,54 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
 
     // MARK: - ARSCNViewDelegate
+    fileprivate lazy var lines: [Line] = []
+    fileprivate var currentLine: Line?
+    fileprivate lazy var endPoint = SCNVector3()
+
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
 
-        guard measureMode == .measuring,
-            let pointOfView = sceneView.pointOfView else {
-            return
+        func jjj() {
+            guard measureMode == .measuring else {return}
+            guard let worldPosition = sceneView.realWorldVector(screenPosition: view.center) else { return }
+            guard startPoint != nil else {
+                startPoint = worldPosition
+                currentLine = Line(sceneView: sceneView, startVector: worldPosition, unit: .centimeter)
+                return
+            }
+            endPoint = worldPosition
+            currentLine?.update(to: endPoint)
         }
-
-        let mat = pointOfView.transform
-        let delta = SCNVector3(-MeasureDistanceFromCenterPoint * mat.m31, -MeasureDistanceFromCenterPoint * mat.m32, -MeasureDistanceFromCenterPoint * mat.m33)
-        let currentPoint = pointOfView.position + delta
-
-        guard let startPoint = startPoint else {
-            self.startPoint = currentPoint
-            return
+        
+        DispatchQueue.main.async {
+            jjj()
         }
-
-        if measuringRuler == nil {
-            measuringRuler = RulerNode(startPoint: startPoint, endPoint: currentPoint)
-            self.sceneView.scene.rootNode.addChildNode(self.measuringRuler!)
-        } else {
-            measuringRuler?.update(endPoint: currentPoint)
-        }
-
-        showInfo()
+        
+//        return
+//
+//        guard measureMode == .measuring,
+//            let pointOfView = sceneView.pointOfView else {
+//            return
+//        }
+//
+////        sceneView.hitTest(view.center, types: ARHitTestResult.ResultType.featurePoint).first?.worldTransform
+//
+//        let mat = pointOfView.transform
+//        let delta = SCNVector3(-MeasureDistanceFromCenterPoint * mat.m31, -MeasureDistanceFromCenterPoint * mat.m32, -MeasureDistanceFromCenterPoint * mat.m33)
+//        let currentPoint = pointOfView.position + delta
+//
+//        guard self.startPoint != nil else {
+//            self.startPoint = currentPoint
+//            return
+//        }
+//
+//        if measuringRuler == nil {
+//            measuringRuler = RulerNode(startPoint: startPoint, endPoint: currentPoint)
+//            self.sceneView.scene.rootNode.addChildNode(self.measuringRuler!)
+//        } else {
+//            measuringRuler?.update(endPoint: currentPoint)
+//        }
+//
+//        showInfo()
     }
 
     func session(_ session: ARSession, didFailWithError error: Error) {
@@ -176,7 +201,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
-
+    
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         let state = camera.trackingState
         DispatchQueue.main.async {

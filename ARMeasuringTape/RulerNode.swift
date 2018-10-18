@@ -56,8 +56,75 @@ class RulerNode : SCNNode {
     fileprivate var materialArray = [ SCNMaterial ]()
 
     // Internal nodes, useful for updating
-    fileprivate let endNode = SCNNode()
-    fileprivate let nodeGeo = SCNNode()
+    fileprivate var endNode = SCNNode()
+    fileprivate var nodeGeo = SCNNode()
+    
+//    init(from vectorA: SCNVector3, to vectorB: SCNVector3) {
+//        self.startPoint = vectorA
+//        super.init()
+//        self.endPoint = vectorB
+//
+//        let height = self.distance(from: vectorA, to: vectorB)
+//
+////        let dot = SCNSphere(radius: 0.5)
+////        dot.firstMaterial?.diffuse.contents = UIColor.white
+////        dot.firstMaterial?.lightingModel = .constant
+////        dot.firstMaterial?.isDoubleSided = true
+////        let startNode = SCNNode(geometry: dot)
+////        startNode.scale = SCNVector3(1/500.0, 1/500.0, 1/500.0)
+////        startNode.position = startPoint
+//        let startNode = SCNNode()
+//        startNode.position = startPoint
+//        self.addChildNode(startNode)
+//
+////        endNode = SCNNode(geometry: dot)
+////        endNode.scale = SCNVector3(1/500.0, 1/500.0, 1/500.0)
+////        endNode.position = endPoint
+//        endNode = SCNNode()
+//        endNode.position = endPoint
+//        self.addChildNode(endNode)
+//
+//        //Align Z axis
+//        let nodeZAlign = SCNNode()
+//        nodeZAlign.eulerAngles.x = Float.pi/2
+//
+//        let box = SCNBox(width: 0.003, height: height, length: 0.001, chamferRadius: 0)
+//        let material = SCNMaterial()
+//        material.diffuse.contents = UIColor.white
+//        box.materials = [material]
+//        nodeGeo = SCNNode(geometry: box)
+//        nodeGeo.position.y = Float(-height/2) + 0.001
+//        nodeZAlign.addChildNode(nodeGeo)
+//
+//        self.addChildNode(nodeZAlign)
+//        self.constraints = [SCNLookAtConstraint(target: endNode)]
+//    }
+//
+//    func update(to vector: SCNVector3) {
+//        self.endPoint = vector
+//
+//        endNode.position = endPoint
+//        let height = self.distance(from: startPoint, to: endPoint)
+////        let box: SCNBox = SCNBox(width: 0.003, height: height, length: 0.001, chamferRadius: 0)
+////        let material = SCNMaterial()
+////        material.diffuse.contents = UIColor.white
+////        box.materials = [material]
+//        let indices: [Int32] = [0, 1]
+//        let source = SCNGeometrySource(vertices: [startPoint, endPoint])
+//        let element = SCNGeometryElement(indices: indices, primitiveType: .line)
+//        let geometry = SCNGeometry(sources: [source], elements: [element])
+//        geometry.firstMaterial?.diffuse.contents = UIColor.white
+//        nodeGeo.geometry = geometry
+//        nodeGeo.position.y = Float(-height/2) + 0.001
+//    }
+//
+//    func distance(from vectorA: SCNVector3, to vectorB: SCNVector3) -> CGFloat {
+//        return CGFloat (sqrt(
+//            (vectorA.x - vectorB.x) * (vectorA.x - vectorB.x)
+//                +   (vectorA.y - vectorB.y) * (vectorA.y - vectorB.y)
+//                +   (vectorA.z - vectorB.z) * (vectorA.z - vectorB.z)))
+//    }
+
 
     init(startPoint: SCNVector3, endPoint: SCNVector3) {
         self.startPoint = startPoint
