@@ -132,8 +132,8 @@ class RulerNode : SCNNode {
         self.endPoint = endPoint
 
         faceMaterial.diffuse.contents = tapeBackgroundColor
-        edgeMaterial.diffuse.contents = UIColor.darkGray
-        materialArray = [ faceMaterial, faceMaterial, faceMaterial, faceMaterial, edgeMaterial, edgeMaterial]
+        edgeMaterial.diffuse.contents = UIColor.clear
+        materialArray = [faceMaterial, edgeMaterial, faceMaterial, edgeMaterial, edgeMaterial, edgeMaterial]
 
         createMeasure()
     }
@@ -213,6 +213,7 @@ extension RulerNode {
         
         let geo = SCNBox(width: rulerWidth, height: CGFloat(height), length: rulerDepth, chamferRadius: 0)
         geo.materials = materialArray
+        
         return geo
     }
 

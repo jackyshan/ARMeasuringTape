@@ -10,12 +10,12 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     /*
      * The measure will be dropped from center point of the device
      * You may change that distance (it is in meter, 0.2 = 0.2meter)
      */
-    let MeasureDistanceFromCenterPoint: Float = 0.2
+    var MeasureDistanceFromCenterPoint: Float = 0.2
 
     enum MeasureMode {
         case none, measuring
@@ -26,18 +26,26 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet weak var infoLabel: UILabel!
     @IBOutlet weak var startBtn: UIButton!
     @IBOutlet weak var cancelBtn: UIButton!
+    @IBOutlet weak var cirImgV: UIImageView!
 
     fileprivate var measureMode = MeasureMode.none
     fileprivate var measuringRuler: RulerNode? = nil
     fileprivate var startPoint: SCNVector3?
 
     fileprivate var rulerArray = [RulerNode]()
+    
+    var isFeature: Bool = false {
+        didSet {
+            cirImgV.image = isFeature == true ? UIImage.init(named: "circle") : UIImage.init(named: "circle_dis")
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Set the view's delegate
         sceneView.delegate = self
+        sceneView.session.delegate = self
         
         // Show statistics such as fps and timing information
 //        sceneView.showsStatistics = true
@@ -81,10 +89,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 rulerArray.removeLast()
             }
         }
+        else if let line = lines.last {
+            if currentLine == nil {
+                line.removeFromParentNode()
+                lines.removeLast()
+            }
+        }
         
         measuringRuler?.removeFromParentNode()
         measuringRuler = nil
         startPoint = nil
+        currentLine?.removeFromParentNode()
+        currentLine = nil
 
         measureMode = .none
         setupBtns()
@@ -96,12 +112,22 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
 
     @IBAction func startBtnTouchUp(_ sender: Any) {
+        if isFeature == false {
+            HUG.show(title: "正在获取焦点", inSource: self)
+            return
+        }
+        
         if let ruler = measuringRuler {
             rulerArray.append(ruler)
         }
+        else if let line = currentLine {
+            lines.append(line)
+        }
 
         measuringRuler = nil
+        currentLine = nil
         startPoint = nil
+        endPoint = SCNVector3()
 
         measureMode = measureMode == .none ? .measuring : .none
         setupBtns()
@@ -116,56 +142,95 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
     fileprivate lazy var lines: [Line] = []
     fileprivate var currentLine: Line?
-    fileprivate lazy var endPoint = SCNVector3()
+    fileprivate var endPoint =  SCNVector3()
 
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-
-        func jjj() {
-            guard measureMode == .measuring else {return}
-            guard let worldPosition = sceneView.realWorldVector(screenPosition: view.center) else { return }
-            guard startPoint != nil else {
-                startPoint = worldPosition
-                currentLine = Line(sceneView: sceneView, startVector: worldPosition, unit: .centimeter)
+        DispatchQueue.main.async {
+            self.measureKK()
+        }
+    }
+    
+    func measureKK() {
+        guard sceneView.pointOfView != nil else {
+            isFeature = false
+            return
+        }
+        
+        guard let current = sceneView.realWorldVector(screenPosition: view.center) else {
+            isFeature = false
+            return
+        }
+        
+        isFeature = true
+        guard measureMode == .measuring else {return}
+        let currentPoint = current.0
+        let distance = current.1
+        
+        func showText() {
+            if let ruler = measuringRuler {
+                self.infoLabel.text = ruler.lengthString()
+            }
+            else if let line = currentLine {
+                self.infoLabel.text = line.text.string as? String
+            }
+        }
+        
+        func xiantiao() {
+            guard let startPoint = startPoint else {
+                self.startPoint = currentPoint
                 return
             }
-            endPoint = worldPosition
-            currentLine?.update(to: endPoint)
+            
+            if currentLine == nil {
+                currentLine = Line(sceneView: sceneView, startVector: startPoint, unit: .centimeter)
+            }
+            else {
+                endPoint = currentPoint
+                currentLine?.update(to: currentPoint)
+            }
+            
+            showText()
         }
         
-        DispatchQueue.main.async {
-            jjj()
+        func juanchi() {
+            guard let startPoint = startPoint else {
+                self.startPoint = currentPoint
+                return
+            }
+            
+            if measuringRuler == nil {
+                measuringRuler = RulerNode(startPoint: startPoint, endPoint: currentPoint)
+                self.sceneView.scene.rootNode.addChildNode(self.measuringRuler!)
+            } else {
+                measuringRuler?.update(endPoint: currentPoint)
+            }
+            
+            showText()
         }
         
-//        return
-//
-//        guard measureMode == .measuring,
-//            let pointOfView = sceneView.pointOfView else {
-//            return
-//        }
-//
-////        sceneView.hitTest(view.center, types: ARHitTestResult.ResultType.featurePoint).first?.worldTransform
-//
-//        let mat = pointOfView.transform
-//        let delta = SCNVector3(-MeasureDistanceFromCenterPoint * mat.m31, -MeasureDistanceFromCenterPoint * mat.m32, -MeasureDistanceFromCenterPoint * mat.m33)
-//        let currentPoint = pointOfView.position + delta
-//
-//        guard self.startPoint != nil else {
-//            self.startPoint = currentPoint
-//            return
-//        }
-//
-//        if measuringRuler == nil {
-//            measuringRuler = RulerNode(startPoint: startPoint, endPoint: currentPoint)
-//            self.sceneView.scene.rootNode.addChildNode(self.measuringRuler!)
-//        } else {
-//            measuringRuler?.update(endPoint: currentPoint)
-//        }
-//
-//        showInfo()
+        if measuringRuler != nil {
+            juanchi()
+            return
+        }
+        else if currentLine != nil {
+            xiantiao()
+            return
+        }
+
+        if distance > 0.5 {//超过20cm使用
+            xiantiao()
+        }
+        else {
+            juanchi()
+        }
+
     }
 
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
+    }
+    
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -185,11 +250,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             case .limited(let reason):
                 switch reason {
                 case .initializing:
-                    HUG.show(title: "AR功能正在初始化", message: "请左右晃动设备以获取更多特征点", inSource: self, autoDismissDuration: 5)
+                    HUG.show(title: "AR功能正在初始化", message: "请左右晃动设备以获取更多特征点", inSource: self)
                 case .insufficientFeatures:
-                    HUG.show(title: "AR功能受限", message: "请左右晃动设备以获取更多特征点", inSource: self, autoDismissDuration: 5)
+                    HUG.show(title: "AR功能受限", message: "请左右晃动设备以获取更多特征点", inSource: self)
                 case .excessiveMotion:
-                    HUG.show(title: "AR功能受限", message: "设备移动过快", inSource: self, autoDismissDuration: 5)
+                    HUG.show(title: "AR功能受限", message: "设备移动过快", inSource: self)
                 default:
                     break
                 }
@@ -202,6 +267,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
+    
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         let state = camera.trackingState
         DispatchQueue.main.async {
@@ -210,11 +276,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
 
     fileprivate func showInfo() {
-        if let ruler = measuringRuler {
-            DispatchQueue.main.async {
-                self.infoLabel.text = ruler.lengthString()
-            }
-        }
     }
 
 }

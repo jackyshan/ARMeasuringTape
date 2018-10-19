@@ -95,6 +95,7 @@
                     </view>
                     <connections>
                         <outlet property="cancelBtn" destination="RLE-MS-si5" id="NUr-dZ-pK8"/>
+                        <outlet property="cirImgV" destination="pLz-JA-qFs" id="sTP-9O-ndC"/>
                         <outlet property="infoLabel" destination="Kww-oD-02f" id="Ix8-Ur-NF8"/>
                         <outlet property="sceneView" destination="tdt-pL-SgD" id="cgA-DU-VY4"/>
                         <outlet property="startBtn" destination="VFh-9y-YBR" id="8dw-wB-FB9"/>
