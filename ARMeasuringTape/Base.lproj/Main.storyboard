@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tdt-pL-SgD">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </arscnView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circle" translatesAutoresizingMaskIntoConstraints="NO" id="pLz-JA-qFs">
                                 <rect key="frame" x="163.5" y="309.5" width="48" height="48"/>
@@ -84,12 +84,12 @@
                             <constraint firstItem="Kww-oD-02f" firstAttribute="centerX" secondItem="hok-a6-fnT" secondAttribute="centerX" id="7yS-GJ-7oC"/>
                             <constraint firstItem="bDm-LK-QT9" firstAttribute="top" secondItem="VFh-9y-YBR" secondAttribute="bottom" constant="100" id="WXv-dk-5Sr"/>
                             <constraint firstItem="RLE-MS-si5" firstAttribute="leading" secondItem="VFh-9y-YBR" secondAttribute="trailing" id="Zjl-jL-dsX"/>
-                            <constraint firstItem="tdt-pL-SgD" firstAttribute="bottom" secondItem="bDm-LK-QT9" secondAttribute="top" id="avP-oc-LWj"/>
+                            <constraint firstItem="tdt-pL-SgD" firstAttribute="bottom" secondItem="hok-a6-fnT" secondAttribute="bottom" id="avP-oc-LWj"/>
                             <constraint firstItem="RLE-MS-si5" firstAttribute="centerY" secondItem="VFh-9y-YBR" secondAttribute="centerY" id="isr-oi-kbQ"/>
                             <constraint firstItem="tdt-pL-SgD" firstAttribute="width" secondItem="hok-a6-fnT" secondAttribute="width" id="jEx-vb-nYZ"/>
                             <constraint firstItem="tdt-pL-SgD" firstAttribute="centerX" secondItem="hok-a6-fnT" secondAttribute="centerX" id="otz-Iv-4cd"/>
                             <constraint firstItem="pLz-JA-qFs" firstAttribute="centerY" secondItem="hok-a6-fnT" secondAttribute="centerY" id="pGk-UF-BOr"/>
-                            <constraint firstItem="5vo-MM-wO8" firstAttribute="bottom" secondItem="tdt-pL-SgD" secondAttribute="top" id="sd5-Y8-VU2"/>
+                            <constraint firstAttribute="top" secondItem="tdt-pL-SgD" secondAttribute="top" id="sd5-Y8-VU2"/>
                             <constraint firstItem="pLz-JA-qFs" firstAttribute="centerX" secondItem="hok-a6-fnT" secondAttribute="centerX" id="wG3-26-HwS"/>
                         </constraints>
                     </view>

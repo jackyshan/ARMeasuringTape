@@ -228,6 +228,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
+        
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        if status == .restricted || status == .denied {
+            let vc = UIAlertController.init(title: "应用相机权限受限，请选择允许。", message: nil, preferredStyle: .alert)
+            let action = UIAlertAction.init(title: "确定", style: .default) { (_) in
+                guard let url = URL.init(string: UIApplicationOpenSettingsURLString) else {
+                    return
+                }
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
+            vc.addAction(action)
+            self.present(vc, animated: true, completion: nil)
+            return
+        }
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
