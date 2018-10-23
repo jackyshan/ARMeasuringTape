@@ -123,7 +123,7 @@ final class Line {
 
 extension ARSCNView {
     func realWorldVector(screenPosition: CGPoint) -> (SCNVector3, CGFloat)? {
-        let results = self.hitTest(screenPosition, types: [.featurePoint])
+        let results = self.hitTest(screenPosition, types: [.featurePoint, .estimatedHorizontalPlane])
         guard let result = results.first else { return nil }
         return (SCNVector3.positionFromTransform(result.worldTransform), result.distance)
     }

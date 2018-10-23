@@ -58,6 +58,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
+        configuration.isLightEstimationEnabled = true
+        configuration.planeDetection = .horizontal
         sceneView.debugOptions = [.showFeaturePoints]
         sceneView.automaticallyUpdatesLighting = true
         // Run the view's session
