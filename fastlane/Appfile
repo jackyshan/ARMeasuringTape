@@ -1,0 +1,8 @@
+app_identifier("com.jackyshan.ARMeasuringTape") # The bundle identifier of your app
+apple_id("1393210619@qq.com") # Your Apple email address
+
+itc_team_id("119392182") # App Store Connect Team ID
+team_id("77MBMXF73A") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
